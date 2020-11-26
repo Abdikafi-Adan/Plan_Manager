@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for plan in plans %}
+        {{ plan.plan_name }} <br>
+        {{plan.plan_description }} <br>
+        {{ plan.category_name }} <br>
+        {{ plan.due_date }} <br>
+        {{ plan.is_urgent }} <br>
+
+    {% endfor %}
+
+{% endblock %}
