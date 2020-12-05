@@ -23,7 +23,7 @@ mongo = PyMongo(app)
 @app.route("/")
 @app.route("/get_plans")
 def get_plans():
-    plans = mongo.db.plans.find()
+    plans = list(mongo.db.plans.find())
     return render_template("plans.html", plans=plans)
 
 
@@ -93,10 +93,31 @@ def profile(username):
 
 @app.route("/logout")
 def logout():
-    # Loggs out User from sesion cookie 
+    # Loggs out User from sesion cookie
     flash("You have been  logged out ")
     session.pop("user")
-    return redirect(url_for("login")) 
+    return redirect(url_for("login"))
+
+
+@app.route("/add_plan",  methods=["GET", "POST"])
+def add_plan():
+
+    if request.method == "POST":
+        is_urgent = "on" if request.form.get("is_urgent") else "off"
+        plan = {
+            "category_name": request.form.get("category_name"),
+            "plan_name": request.form.get("plan_name"),
+            "plan_description": request.form.get("plan_description"),
+            "is_urgent": is_urgent,
+            "due_date": request.form.get("due_date"),
+            "created_by": session["user"]
+        }
+        mongo.db.plans.insert_one(plan)
+        flash("Plan Successfully Added")
+        return redirect(url_for("get_plans"))
+    
+    categories = mongo.db.categories.find().sort("category_name", 1)
+    return render_template("add_plan.html", categories=categories)
 
 
 if __name__ == "__main__":

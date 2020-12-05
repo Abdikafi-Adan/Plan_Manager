@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
     <h3 class="center-align">Register</h3>
-<div class="row">
-  <form class="col s12 m8 offset-m2"
+<div class="row ">
+  <form class="col s12 m8 offset-m2 "
    method="POST" action="{{ url_for('register') }}">
    
-    <div class="card-panel cyan lighten-3">
+    <div class="card-panel cyan lighten-3 bg-shadow">
 
       <!-- username -->
 
@@ -50,8 +50,8 @@
   </form>
 </div>
 
-<div class="row">
-    <div class="col s12">
+<div class="row ">
+    <div class="col s12 bg-shadow">
         <p class="center-align">
             Already Registered?
           <a href="{{ url_for('login') }}" class="light-blue-text text-darken-4">Log In</a>

@@ -1,30 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    {% for plan in plans %}
-        {{ plan.plan_name }} <br>
-        {{plan.plan_description }} <br>
-        {{ plan.category_name }} <br>
-        {{ plan.due_date }} <br>
-        {{ plan.is_urgent }} <br>
+    <!-- Shows all the plans in the Databas using a for loop-->
+   <h3 class="center-align">
+        All Plans 
+    </h3>
 
-    {% endfor %}
 
     <ul class="collapsible popout ">
+        {% for plan in plans %}
         <li>
-            <div class="collapsible-header white-text light-blue darken-3 text-shadow collapsible-shadow ">
-            <i class="fas fa-caret-down"></i>First</div>
-            <div class="collapsible-body collapsible-shadow"><span>Lorem ipsum dolor sit amet.</span></div>
+            
+            <div class="collapsible-header white-text light-blue darken-3 text-shadow bg-shadow">
+                <div class="col s3 ">
+                    <i class="fas fa-caret-down right"></i>
+                    <a href="" class="waves-effect waves-light btn-small green accent-4 bg-shadow ">Done</a>
+                    <a href="" class="waves-effect waves-light btn-small light-blue darken-1 bg-shadow">Edit</a>
+                    
+                </div>
+                <div class="col s9">
+                    <strong>{{ plan.plan_name }}</strong>:  {{ plan.due_date }}
+                    {% if plan.is_urgent == "on" %}
+                        <i class="fas fa-exclamation-circle light-blue-text text-lighten-2 tooltipped"
+                            data-position="right" data-tooltip="MUST DO!"></i>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="collapsible-body bg-shadow">
+                <strong>{{ plan.category_name }} </strong>
+                <p> {{plan.plan_description }} </p>
+                <p><em>By:{{ plan.created_by}}</em></p>
+
+            </div>
+
         </li>
-        <li>
-            <div class="collapsible-header white-text light-blue darken-3 text-shadow collapsible-shadow ">
-            <i class="fas fa-caret-down"></i>Second</div>
-            <div class="collapsible-body collapsible-shadow "><span>Lorem ipsum dolor sit amet.</span></div>
-        </li>
-        <li>
-            <div class="collapsible-header white-text light-blue darken-3 text-shadow collapsible-shadow ">
-            <i class="fas fa-caret-down"></i>Third</div>
-            <div class="collapsible-body collapsible-shadow"><span>Lorem ipsum dolor sit amet.</span></div>
-        </li>
+       {% endfor %}
   </ul>
 
 {% endblock %}
