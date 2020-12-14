@@ -21,14 +21,11 @@ mongo = PyMongo(app)
 
 
 @app.route("/")
-@app.route("/get_plans")
+@app.route("/get_plans", methods=["GET", "POST"])
 def get_plans():
     plans = list(mongo.db.plans.find())
 
-    username = mongo.db.users.find_one(
-                        {"username": session["user"]})["username"]
-
-    return render_template("plans.html", plans=plans, username=username)
+    return render_template("plans.html", plans=plans)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -51,7 +48,7 @@ def register():
         # put the new user into 'session' cookie
         session["user"] = request.form.get("username").lower()
         flash("Registration Successful!")
-        return redirect(url_for("profile", username=session["user"]))
+        return redirect(url_for("get_plans", username=session["user"]))
     return render_template("register.html")
 
 
