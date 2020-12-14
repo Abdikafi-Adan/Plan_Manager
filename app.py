@@ -24,7 +24,11 @@ mongo = PyMongo(app)
 @app.route("/get_plans")
 def get_plans():
     plans = list(mongo.db.plans.find())
-    return render_template("plans.html", plans=plans)
+
+    username = mongo.db.users.find_one(
+                        {"username": session["user"]})["username"]
+
+    return render_template("plans.html", plans=plans, username=username)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -51,7 +55,6 @@ def register():
     return render_template("register.html")
 
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
@@ -63,10 +66,13 @@ def login():
         if existing_user:
             # ensure hashed password matches user input
             if check_password_hash(
-                existing_user["password"], request.form.get("password")):
-                    session["user"] = request.form.get("username").lower()
-                    flash("Welcome, {}".format(request.form.get("username")))
-                    return redirect(url_for("profile", username=session["user"]))
+                    existing_user["password"], request.form.get("password")):
+                        session["user"] = request.form.get("username").lower()
+                        flash("Welcome, {}".format(
+                            request.form.get("username")))
+                        return redirect(url_for(
+                            "profile", username=session["user"]))
+
             else:
                 # invalid password match
                 flash("Incorrect Username and/or Password")
@@ -80,16 +86,17 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/profile/<username>",methods=["GET", "POST"])
+@app.route("/profile/<username>", methods=["GET", "POST"])
 def profile(username):
     # graps the session user's username from db
     username = mongo.db.users.find_one(
-                        {"username":session["user"]})["username"]
+                        {"username": session["user"]})["username"]
 
     if session["user"]:
         return render_template("profile.html", username=username)
-   
+
     return redirect(url_for("login"))
+
 
 @app.route("/logout")
 def logout():
@@ -101,7 +108,7 @@ def logout():
 
 @app.route("/add_plan",  methods=["GET", "POST"])
 def add_plan():
-
+    # handels the Post resquset from the form in add_plan html
     if request.method == "POST":
         is_urgent = "on" if request.form.get("is_urgent") else "off"
         plan = {
@@ -115,9 +122,42 @@ def add_plan():
         mongo.db.plans.insert_one(plan)
         flash("Plan Successfully Added")
         return redirect(url_for("get_plans"))
-    
+
     categories = mongo.db.categories.find().sort("category_name", 1)
     return render_template("add_plan.html", categories=categories)
+
+
+@app.route("/edit_plan/<plan_id>", methods=["GET", "POST"])
+def edit_plan(plan_id):
+    # handels the Post resquset to upddate the form
+    if request.method == "POST":
+        is_urgent = "on" if request.form.get("is_urgent") else "off"
+        edit_form = {
+            "category_name": request.form.get("category_name"),
+            "plan_name": request.form.get("plan_name"),
+            "plan_description": request.form.get("plan_description"),
+            "is_urgent": is_urgent,
+            "due_date": request.form.get("due_date"),
+            "created_by": session["user"]
+        }
+
+        mongo.db.plans.update({"_id": ObjectId(plan_id)}, edit_form)
+        flash("Plan was Successfully Edited ")
+
+    plan = mongo.db.plans.find_one({"_id": ObjectId(plan_id)})
+
+    categories = mongo.db.categories.find().sort("category_name", 1)
+    return render_template("edit_plan.html", plan=plan, categories=categories)
+
+
+# Allows user to delete plan
+@app.route('/delete_task/<plan_id>')
+def delete_plan(plan_id):
+
+    mongo.db.plans.remove({'_id': ObjectId(plan_id)})
+    flash("Plan was Successfully Delete")
+
+    return redirect(url_for('get_plans'))
 
 
 if __name__ == "__main__":

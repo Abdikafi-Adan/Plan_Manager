@@ -12,6 +12,9 @@ body {
     line-height: 2;
 }
 
+.margin {
+    margin: 25px;
+}
 .collapsible-body {
     background-color: #ffffff;
 }
@@ -27,4 +30,11 @@ body {
 .collapsible-header .col strong {
     margin: 5 px;
     line-height: 42px;
+}
+
+.modal {
+    background-color: black;
+    color:  white;
+    margin-left: 10px;
+
 }
