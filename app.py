@@ -21,10 +21,10 @@ mongo = PyMongo(app)
 
 
 @app.route("/")
-@app.route("/get_plans", methods=["GET", "POST"])
+@app.route("/get_plans")
 def get_plans():
     plans = list(mongo.db.plans.find())
-
+  
     return render_template("plans.html", plans=plans)
 
 
